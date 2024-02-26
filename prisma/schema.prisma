@@ -1,0 +1,26 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Assistant{
+  id String @id @default(uuid())
+  assistantId String @unique 
+}
+
+model UserThread {
+  id String @id @default(uuid())
+  userId String @unique
+  threadId String
+  createdAt DateTime @default(now())
+}
+
+// Login -> get user Id -> get threadId -> get messages
+
+// DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
