@@ -21,11 +21,10 @@ function ChatPage() {
   const [sending,setSending] = useState(false)
   const [pollingRun,setPollingRun] = useState(false)
 
-
+  console.log('messages',messages)
 
   const fetchMessages = useCallback(async () => {
     if (!userThread) return;
-    console.log('데이터 패칭 userThred',userThread)
 
     setFetching(true);
 
@@ -72,6 +71,10 @@ function ChatPage() {
 
   useEffect(() => {
     fetchMessages()
+    // const intervalId = setInterval(fetchMessages, POLLING_FREQUENCY_MS);
+
+    // // Clean up on unmount
+    // return () => clearInterval(intervalId);
   }, []);
 
   const startRun = async (
