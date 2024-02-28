@@ -2,6 +2,7 @@
 
 import { assistantAtom, userThreadAtom } from "@/atoms";
 import Navbar from "@/components/Navbar";
+import userServiceWorker from "@/hooks/useServiceWorker";
 import { Assistant, UserThread } from "@prisma/client";
 import axios from "axios";
 import { useAtom } from "jotai";
@@ -13,10 +14,11 @@ export default function AppRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // todo : if the user doesn't have threadId, we make one
-  // todo : if the user does have one, we fetch it
   const [,setUserThread] = useAtom(userThreadAtom)
   const [assistant,setAssistant] = useAtom(assistantAtom)
+
+  userServiceWorker();
+
   console.log('assistant id',assistant)
 
   useEffect(()=>{
