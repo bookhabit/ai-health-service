@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
-const withPwa = require('next-pwa')({
+import nextPWA from 'next-pwa';
+const withPwa = nextPWA({
     dest:'public',
     swSrc:'/public/custom-service-worker.js',
     register:true,
