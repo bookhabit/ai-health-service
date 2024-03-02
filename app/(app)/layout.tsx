@@ -90,13 +90,34 @@ export default function AppRootLayout({
     }
   },[])
 
+  const saveSubscription = useCallback(async () => {
+    const serviceWorkerRegistration = await navigator.serviceWorker.ready;
+    const subscription = await serviceWorkerRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    });
+
+    try {
+      const response = await axios.post("/api/subscription", subscription);
+
+      if (!response.data.success) {
+        console.error(response.data.message ?? "Unknown error.");
+        toast.error("Failed to save subscription.");
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to save subscription.");
+    }
+  }, []);
+
   useEffect(()=>{
     if("Notification" in window && "serviceWorker" in navigator){
         if(Notification.permission == "granted"){
           saveSubscription();
         }
     }
-  },[])
+  },[saveSubscription])
 
   const handleNotificationModalClose = (didConstent:boolean)=>{
     setIsNotificationModalVisible(false);
@@ -105,30 +126,6 @@ export default function AppRootLayout({
       toast.success("You will now receive notifications")
     }
   }
-
-  const saveSubscription = useCallback(async ()=>{
-    const serviceWorkerRegistration = await navigator.serviceWorker.ready;
-    const subscription = await serviceWorkerRegistration.pushManager.subscribe({
-      userVisibleOnly:true,
-      applicationServerKey:process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-    });
-
-    try{
-      const response = await axios.post("/api/subscription",{
-        subscription
-      });
-      
-      if(!response.data.success){
-        console.error(response.data.message ?? "Unknown error.")
-        toast.error("Failed to save subscription.")
-        return;
-      }
-
-    }catch(error){
-      console.error(error)
-      toast.error("Failed to save subscription.")
-    }
-  },[])
 
   return (
     <div className="flex flex-col w-full h-full">
