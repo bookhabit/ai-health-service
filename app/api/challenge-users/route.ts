@@ -4,7 +4,7 @@ import axios from "axios";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-interface UserThreadMapType{
+interface UserThreadMap{
     [userId:string]:UserThread
 }
 
@@ -95,99 +95,106 @@ export async function POST(request:Request) {
     
       console.log(message);
 
-    // Grab all challenge preferences
-    const challengePreferences = await prismadb.challengePreferences.findMany({
-        where: {
-            challengeId,
-        },
-    });
+     // Grab all challenge preferences
+  const challengePreferences = await prismadb.challengePreferences.findMany({
+    where: {
+      challengeId,
+    },
+  });
 
-    console.log("challengePreferences", challengePreferences);
+  console.log("challengePreferences", challengePreferences);
 
-    const userIds = challengePreferences.map((cp) => cp.userId);
+  const userIds = challengePreferences.map((cp) => cp.userId);
 
-    console.log("userIds", userIds);
+  console.log("userIds", userIds);
 
-    //  Grab all user threads
-    const userThreads = await prismadb.userThread.findMany({
-        where: {
-        userId: {
-            in: userIds,
-        },
-        },
-    });
+  //  Grab all user threads
+  const userThreads = await prismadb.userThread.findMany({
+    where: {
+      userId: {
+        in: userIds,
+      },
+    },
+  });
 
-    console.log('userThreads',userThreads)
+  console.log("userThreads", userThreads);
 
-    // Grab all user metadata
-    const userMetas = await prismadb.userMeta.findMany({
-      where:{
-        userId:{
-          in:userIds,
-        }
-      }
-    })
+  // Grab all user metadata
+  const userMetas = await prismadb.userMeta.findMany({
+    where: {
+      userId: {
+        in: userIds,
+      },
+    },
+  });
 
-    console.log('userMetas',userMetas)
+  console.log("userMetas", userMetas);
 
-    const userThreadMap:UserThreadMapType = userThreads.reduce((map,thread)=>{
-        map[thread.userId] = thread;
-        return map;
-    },{} as UserThreadMapType)
+  const userThreadMap: UserThreadMap = userThreads.reduce((map, thread) => {
+    map[thread.userId] = thread;
+    return map;
+  }, {} as UserThreadMap);
 
-    const userMetaMap = userMetas.reduce((map,meta)=>{
-      map[meta.userId] = meta;
-      return map
-    }, {} as UserMetaMap)
+  const userMetaMap = userMetas.reduce((map, meta) => {
+    map[meta.userId] = meta;
+    return map;
+  }, {} as UserMetaMap);
 
-    // add messages to threads
-    const threadAndNotificationsPromises:Promise<any>[] = [];
+  console.log("userMetaMap", userMetaMap);
 
-    try{
-        challengePreferences.forEach((cp)=>{
-            // find the respective user
-            const userThread = userThreadMap[cp.userId]
-    
-            // add message to thread
-            if(userThread){
-              // Send Message
-                threadAndNotificationsPromises.push(
-                    axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/message/create`,{
-                        message,
-                        threadId: userThread.threadId,
-                        fromUser: "false",
-                    })
-                )
-            }
-            if(cp.sendNotifications){
-              // Send Notification
-              const correspondingUserMeta = userMetaMap[cp.userId]
-              threadAndNotificationsPromises.push(
-                axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-notifications`,{
-                  subscription:{
-                    endpoint:correspondingUserMeta.endpoint,
-                    keys:{
-                      auth:correspondingUserMeta.auth,
-                      p256dh:correspondingUserMeta.p256dh
-                    }
+  // Add messages to threads
+  const threadAndNotificationsPromises: Promise<any>[] = [];
+
+  try {
+    challengePreferences.forEach((cp) => {
+      //  FIND THE RESPECTIVE USER
+      const userThread = userThreadMap[cp.userId];
+
+      //  ADD MESSAGE TO THREAD
+      if (userThread) {
+        // Send Message
+        threadAndNotificationsPromises.push(
+          axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/message/create`, {
+            message,
+            threadId: userThread.threadId,
+            fromUser: "false",
+          })
+        );
+
+        // Send Notification
+        if (cp.sendNotifications) {
+          const correspondingUserMeta = userMetaMap[cp.userId];
+          if(correspondingUserMeta){
+            threadAndNotificationsPromises.push(
+              axios.post(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/send-notifications`,
+                {
+                  subscription: {
+                    endpoint: correspondingUserMeta.endpoint,
+                    keys: {
+                      auth: correspondingUserMeta.auth,
+                      p256dh: correspondingUserMeta.p256dh,
+                    },
                   },
                   message,
-                })
+                }
               )
-            }
-        })
-    
-        await Promise.all(threadAndNotificationsPromises)
-    
-        return NextResponse.json({message},{status:200})
-    }catch(error){
-        console.error(error)
-        return NextResponse.json(
-            {success:false,message:"Something went wrong"},
-            {status:500}
-        )
-    }
+            );
+          }
+        }
+      }
+    });
 
+    await Promise.all(threadAndNotificationsPromises);
 
-    // future - send PWA notification to user
+    return NextResponse.json({ message }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { success: false, message: "Something went wrong" },
+      {
+        status: 500,
+      }
+    );
+  }
 }
