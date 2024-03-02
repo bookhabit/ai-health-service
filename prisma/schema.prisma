@@ -30,6 +30,12 @@ model ChallengePreferences{
   updatedAt DateTime @updatedAt
 }
 
-// Login -> get user Id -> get threadId -> get messages
-
-// DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
+model UserMeta{
+  id String @id @default(uuid())
+  userId String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  endpoint String @db.Text
+  p256dh String @db.Text
+  auth String @db.Text
+}
