@@ -115,6 +115,9 @@ export async function POST(request:Request) {
         in: userIds,
       },
     },
+    orderBy: {
+      createdAt: 'asc',
+    }
   });
 
   console.log("userThreads", userThreads);
@@ -126,6 +129,9 @@ export async function POST(request:Request) {
         in: userIds,
       },
     },
+    orderBy: {
+      createdAt: 'asc',
+    }
   });
 
   console.log("userMetas", userMetas);
