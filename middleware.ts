@@ -10,7 +10,8 @@ export default authMiddleware({
     '/api/run/create',
     '/api/run/retrieve',
     '/api/challenge-users',
-    '/api/openai'
+    '/api/openai',
+    "/api/send-notifications"
   ],
   // Routes that can always be accessed, and have
   // no authentication information
