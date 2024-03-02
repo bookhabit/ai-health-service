@@ -163,14 +163,15 @@ export async function POST(request:Request) {
               // Send Notification
               const correspondingUserMeta = userMetaMap[cp.userId]
               threadAndNotificationsPromises.push(
-                axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-notification`,{
+                axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-notifications`,{
                   subscription:{
                     endpoint:correspondingUserMeta.endpoint,
                     keys:{
                       auth:correspondingUserMeta.auth,
                       p256dh:correspondingUserMeta.p256dh
                     }
-                  }
+                  },
+                  message,
                 })
               )
             }
