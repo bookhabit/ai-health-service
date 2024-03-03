@@ -25,8 +25,6 @@ export default function AppRootLayout({
   // hooks
   userServiceWorker();
 
-  console.log('assistant id',assistant)
-
   useEffect(()=>{
     if(assistant) return
 
@@ -37,8 +35,6 @@ export default function AppRootLayout({
           message?:string;
           assistants:Assistant;
         }>("/api/assistant")
-
-        console.log('assistant 얻기 response',response)
 
         if(!response.data.success || !response.data.assistants){
           console.error(response.data.message ?? "Unknown error") 

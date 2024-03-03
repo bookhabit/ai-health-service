@@ -6,6 +6,7 @@ import { useAtom } from 'jotai'
 import { Run, Thread, ThreadMessage } from 'openai/resources/beta/threads/index.mjs'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import toast from "react-hot-toast"
+import {throttle} from "lodash"
 
 const POLLING_FREQUENCY_MS = 1000
 
@@ -21,21 +22,19 @@ function ChatPage() {
   const [sending,setSending] = useState(false)
   const [pollingRun,setPollingRun] = useState(false)
 
+  console.log('messages',messages)
+
   // state for chatting
   const scrollBarRef = useRef<HTMLDivElement>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const [prevScrollHeight,setPrevScrollHeight] = useState<number|null>(null);
   const [hasNextPage,setHasNextPage] = useState(false)
   const [paginatedParams,setPaginatedParams] = useState<{ after: string }>({after:''})
-  
-  console.log('hasNextpage',hasNextPage)
-  console.log('paginatedParams',paginatedParams)
 
   // 스크롤 바 아래로 이동시키는 함수
   const moveToBottom = ()=>{
     messageEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
   }
-
-  
 
   const fetchMessages = useCallback(async () => {
     if (!userThread) return;
@@ -52,15 +51,6 @@ function ChatPage() {
       }>("/api/message/list", { threadId: userThread.threadId,paginatedParams });
 
       console.log('response값!',response)
-      // 다음 페이지 있는지 boolean값
-      if(response.data.has_more){
-        setHasNextPage(response.data.has_more)
-      }
-      if(response.data.nextPageParams){
-        setPaginatedParams(response.data.nextPageParams)
-      }
-      
-      console.log('threadId',userThread.threadId)
 
       // Validation
       if (!response.data.success || !response.data.messages) {
@@ -71,55 +61,64 @@ function ChatPage() {
       let newMessages = response.data.messages;
       console.log('newMessages',newMessages)
 
-      if(!newMessages){console.log('newMessages에러',newMessages)}
-      // Sort in descending order
-      newMessages = newMessages.sort((a, b) => {
-          return (
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-          );
-        })
-        .filter(
-          (message) =>
-            message.content[0].type === "text" &&
-            message.content[0].text.value.trim() !== ""
-        );
 
-      setMessages(newMessages);
-      moveToBottom();
+      // Update messages state by concatenating old messages with new messages
+      setMessages(prevMessages => [...prevMessages, ...newMessages]);
+
+      if(response.data.has_more === false && response.data.nextPageParams===null){
+        toast.success("이전 채팅데이터가 없습니다.")
+        setHasNextPage(false)
+        setPaginatedParams({after:''})
+        return
+      }else{
+        // 다음 페이지 있는지 boolean값
+        if(response.data.has_more){
+          setHasNextPage(response.data.has_more)
+        }
+        if(response.data.nextPageParams){
+          setPaginatedParams(response.data.nextPageParams)
+        }
+      }
     } catch (error) {
       console.error(error);
       setMessages([]);
     } finally {
       setFetching(false);
     }
-  }, [userThread]);
+  }, [userThread,hasNextPage,paginatedParams]);
 
   useEffect(() => {
-    fetchMessages();
+    fetchMessages()
   }, [userThread]);
 
-// fetch nextData as scroll event
-  // const handleScroll = throttle(() => {
-  //   const scrollTop = document.documentElement.scrollTop;
+  // fetch nextData as scroll event
+  const handleScroll = throttle(() => {
+    // 현재 스크롤 위치
+    const currentScrollPosition = scrollBarRef.current?.scrollTop
+    
+    if (currentScrollPosition === 0 && hasNextPage && paginatedParams.after !== '') {
+        if(scrollBarRef.current){
+          setPrevScrollHeight(scrollBarRef.current.scrollHeight)
+        }
+        fetchMessages()
+    }
+  }, 1000);
 
-  //   if (scrollTop === 0 && hasNextPage && nextPageNumber !== 0) {
-  //       if(scrollBarRef.current){
-  //           setPrevScrollHeight(scrollBarRef.current.scrollHeight)
-  //       }
-  //       fetchChatData(nextPageNumber)
-  //   }
-  // }, 300);
+   // set scroll event
+   useEffect(() => {
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   // scroll restoration or scroll to bottom
-  // useEffect(()=>{
-  //   if (prevScrollHeight && scrollBarRef.current) {
-  //       window.scrollTo(0,scrollBarRef.current.scrollHeight - prevScrollHeight)
-  //       return setPrevScrollHeight(null);
-  //   }else{
-  //       messageEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
-  //   }
-  //   messageEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
-  // },[fetchMessages])
+  useEffect(()=>{
+    if (prevScrollHeight && scrollBarRef.current) {
+        window.scrollTo(0,prevScrollHeight)
+        return setPrevScrollHeight(null);
+    }else{
+        moveToBottom()
+    }
+  },[messages])
   
 
   const startRun = async (
@@ -176,13 +175,11 @@ function ChatPage() {
           return;
         }
 
-        console.log("run", run);
-
         // refetch
         if (run.status === "completed") {
           clearInterval(intervalId);
           setPollingRun(false);
-          await fetchMessages();
+          fetchMessages();
           return;
         } else if (run.status === "failed") {
           clearInterval(intervalId);
@@ -250,9 +247,15 @@ function ChatPage() {
   return (
     <div className='w-screen h-[calc(100vh-64px)] flex flex-col bg-black text-white'>
       {/* todo : Messages */}
-      <div className='flex-grow overflow-y-scroll p-8 space-y-2' ref={scrollBarRef} >
+      <div className='flex-grow overflow-y-scroll p-8 space-y-2' ref={scrollBarRef} onScroll={handleScroll} >
         {/* fetching messages */}
         {fetching && messages.length === 0 &&
+          <div className='text-center font-bold'>
+            Fetching...
+          </div>
+        }
+        {/* fetching previous messages */}
+        {fetching && messages.length !== 0 &&
           <div className='text-center font-bold'>
             Fetching...
           </div>
@@ -265,7 +268,11 @@ function ChatPage() {
             </div>
         )}
         {/* listing out the messges */}
-        {messages.map((message)=>(
+        {/* // Sort in descending order */}
+        {messages
+        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        .filter((message) => message.content[0].type === "text" && message.content[0].text.value.trim() !== "")
+        .map((message)=>(
           <div key={message.id} className={`px-4 py-2 mb-3 rounded-lg w-fit text-lg ${
             ["true","True"].includes(
               (message.metadata as {fromUser?:string}).fromUser ?? ""

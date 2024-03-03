@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import OpenAI from "openai"
 
 export async function POST(req:Request){
-    const {threadId} = await req.json()
+    const {threadId,paginatedParams} = await req.json()
 
     if(!threadId){
         return NextResponse.json(
@@ -16,14 +16,15 @@ export async function POST(req:Request){
     try{
         const response = await openai.beta.threads.messages.list(threadId,{
             limit:10,
-            // after: paginatedParams?.after || ''
+            order:"desc",
+            after: paginatedParams?.after || ''
         })
-
+        
         const has_more = response.hasNextPage();
         const nextPageParams = response.nextPageParams()
-        console.log('has_more',has_more)
-        console.log('nextPageParams',nextPageParams)
-        console.log('from openai messages list',response.data)
+
+        console.log('api요청 횟수')
+        console.log('paginatedParams?.after 값',paginatedParams?.after)
 
         return NextResponse.json(
             {
