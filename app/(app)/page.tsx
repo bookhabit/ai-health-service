@@ -118,6 +118,7 @@ function ChatPage() {
     }else{
         moveToBottom()
     }
+    // TODO : 푸시알림시, 채팅 보낼 때, 채팅 수신 시 moveToBottom()실행
   },[messages])
   
 
@@ -244,6 +245,39 @@ function ChatPage() {
     }
   }
 
+  function formatTime(timestamp:number) {
+    const millisecondsAgo = Date.now() - timestamp * 1000; // 초를 밀리초로 변환
+    const secondsAgo = millisecondsAgo / 1000;
+    const minutesAgo = secondsAgo / 60;
+    const hoursAgo = minutesAgo / 60;
+    const daysAgo = hoursAgo / 24;
+  
+    if (minutesAgo < 1) {
+      const seconds = Math.floor(secondsAgo);
+      return `${seconds}초 전`;
+    } else if (hoursAgo < 1) {
+      const minutes = Math.floor(minutesAgo);
+      return `${minutes}분 전`;
+    } else if(daysAgo < 1) {
+      const hours = Math.floor(hoursAgo);
+      return `${hours}시간 전`;
+    } else if (daysAgo < 2) {
+      return '1일 전';
+    } else if (daysAgo < 7) {
+      const days = Math.floor(daysAgo);
+      return `${days}일 전`;
+    } else if (daysAgo < 30) {
+      const weeks = Math.floor(daysAgo / 7);
+      return `${weeks}주일 전`;
+    } else {
+      const months = Math.floor(daysAgo / 30);
+      return `${months}개월 전`;
+    }
+  }
+  
+  let lastDate:Date|null = null;
+  
+
   return (
     <div className='w-screen h-[calc(100vh-64px)] flex flex-col bg-black text-white'>
       {/* todo : Messages */}
@@ -270,24 +304,42 @@ function ChatPage() {
         {/* listing out the messges */}
         {/* // Sort in descending order */}
         {messages
-        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-        .filter((message) => message.content[0].type === "text" && message.content[0].text.value.trim() !== "")
-        .map((message)=>(
-          <div key={message.id} className={`px-4 py-2 mb-3 rounded-lg w-fit text-lg ${
-            ["true","True"].includes(
-              (message.metadata as {fromUser?:string}).fromUser ?? ""
-            ) 
-            ? "bg-yellow-500 ml-auto"
-            : "bg-gray-700"
-          } `}>
-            {message.content[0].type === "text" 
-            ? message.content[0].text.value 
-              .split("\n")
-              .map((text,index)=><p key={index}>{text}</p>)
-            
-            : null}
-          </div>
-        ))}
+          .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+          .filter((message) => message.content[0].type === "text" && message.content[0].text.value.trim() !== "")
+          .map((message) => {
+            const messageDate = new Date(message.created_at * 1000); // 초를 밀리초로 변환
+            let shouldDisplayDate = false;
+            const USER = ["true","True"].includes((message.metadata as {fromUser?:string}).fromUser ?? "")
+
+            // 날짜가 변경되었을 때, 날짜 구분 헤더 추가
+            if (!lastDate || messageDate.toDateString() !== lastDate.toDateString()) {
+              lastDate = messageDate;
+              shouldDisplayDate = true;
+            }
+
+            // 지난 대화 표시
+            return (
+              <div key={message.id} className='w-full'>
+                {shouldDisplayDate ?                                     
+                  <div key={`date-${message.created_at}`} className="text-center mb-4 text-gray-200">
+                    {shouldDisplayDate ? 
+                    `${messageDate.getFullYear()}년 ${messageDate.getMonth() + 1}월 ${messageDate.getDate()}일 ${["일", "월", "화", "수", "목", "금", "토"][messageDate.getDay()]}요일`
+                    : null
+                    }
+                  </div> : null}
+                <div className={`flex ${USER ? " flex-row-reverse": " flex-row"} w-full`}>
+                  <div key={message.id} className={`px-4 py-2 mb-3 ml-0 rounded-lg text-lg max-w-[250px] sm:max-w-[440px] lg:max-w-[540px] ${ USER? "bg-yellow-500 ml-auto" : "bg-gray-700"} `}>
+                    {message.content[0].type === "text" 
+                    ? message.content[0].text.value 
+                      .split("\n")
+                      .map((text,index)=><p key={index}>{text}</p>)
+                    : null}
+                  </div>
+                  <p className={`text-gray-300 p-2 mb-2 flex flex-col justify-end ${USER ? "mr-1 items-end" :"ml-1"}`}>{formatTime(message.created_at)}</p>
+                </div>
+              </div>
+            );
+        })}
         <div ref={messageEndRef}></div>
       </div>
       {/* todo : input */}
