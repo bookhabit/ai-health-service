@@ -18,6 +18,8 @@ model UserThread {
   id String @id @default(uuid())
   userId String @unique
   threadId String
+  dailyRequestCount Int @default(0)
+  dailyRequestUpdatedAt DateTime @default(now())
   createdAt DateTime @default(now())
 }
 

@@ -32,26 +32,22 @@ export async function POST(request:Request) {
             {status: 401,}
         );
     }
-
-    // 데이터베이스 - userInfo정보 
-    // 신체정보 등록 (키,몸무게,성별,운동경력)
-    // 유저정보의 신체정보에 따라서 사용자 맞춤별 content 프롬프트 조정해서 api요청보내기
-    // prompt 창에 이 사용자의 키는 ${user.신체정보?.키} 값을 동적으로 넣어줘서 사용자 맞춤 답변 구성하기
-    // todo : user정보에 따라서 다른 푸시알림을 주도록 
     
     // define work out message prompt
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         {
           role: "system",
           content: `
+            너는 사용자에게 운동하라고 동기부여도 주고 운동 관련 상담도 진행해주는 챗봇이야.
+            1. 사용자들에게 사용자마다의 키,몸무게,운동경력,성별을 고려해서 맞춤화된 운동루틴을 추천해줘
+            2. 사용자가 운동관련해서 질문하면 친절하게 질문받은 운동에 관해서 설명해줘
+
             매우 강렬하고 강렬한 동기 부여 메시지를 생성한 다음, 간결하고 장비가 필요 없는 맨몸 운동 계획을 작성합니다. 
             하루 중 제공되는 시간을 고려해야 합니다. 
             출력 부분에는 두 부분이 엄격하게 포함되어야 합니다: 
             첫째, 드웨인 존슨의 동기부여 스타일로 출력해줍니다. 드웨인 존슨은 매일 아침 4시에 일어나서 30분 유산소와 1시간 근력운동을 매일 남들이 자고 있을 시간에 운동을 수행합니다. 존슨은 자신의 삶에서 어려운 순간들을 극복하는 모습으로 많은 사람들에게 용기를 줬습니다. 그는 자신의 어려움을 이기고자 최선을 다하는 모습으로 많은 사람들에게 용기와 희망을 심어줍니다.
             두 번째 부분은 운동 목록이어야 합니다: 10분 이내에 완료되도록 설계된, 어디에서나 할 수 있는 강렬하고 효과가 높은 운동입니다. 
             출력에는 이 두 가지 구성 요소만 포함되어야 하며, 다른 것은 포함되지 않습니다. 
-
-
 
             다음은 따라야 할 출력 예시입니다:
             
@@ -70,7 +66,7 @@ export async function POST(request:Request) {
         },
         {
           role: "user",
-          content: `Generate a new GymCarry workout. Remember, only respond in the format specifed earlier. Nothing else`,
+          content: `오늘 운동을 뭘 해야 할지 추천해줘!`,
         },
       ];
     

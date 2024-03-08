@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import toast from "react-hot-toast"
 import {throttle} from "lodash"
 
-const POLLING_FREQUENCY_MS = 1000
+const POLLING_FREQUENCY_MS = 2000
 
 function ChatPage() {
   // Atom state
@@ -35,6 +35,7 @@ function ChatPage() {
   }
 
   const fetchMessages = useCallback(async () => {
+    console.log('데이터패칭함수 호출')
     if (!userThread) return;
     
     setFetching(true);
@@ -198,6 +199,9 @@ function ChatPage() {
   }
 
   const sendMessage = async ()=>{
+    // TODO : USER의 하루에 API 요청사용량 제한두기
+
+
     // validation
     if(!userThread || sending || !assistant){
       toast.error("Failed to send message. Invalid state.")
@@ -214,8 +218,10 @@ function ChatPage() {
         error?:string;}>("/api/message/create",{
           message,
           threadId:userThread.threadId,
+          userThread:userThread,
           fromUser:'true'
         })
+
   
       // update ours messages with our new response
       if(!newMessages){
@@ -234,9 +240,14 @@ function ChatPage() {
         return;
       }
       pollRunStatus(userThread.threadId, runId);
-    }catch(error){
-      console.log(error)
-      toast.error("Failed to send message. Please try again")
+    }catch(error:any){
+      if(error.response.status == 422){
+        console.log(error.response.data.error)
+        toast.error(error.response.data.error)
+      }else{
+        console.log(error)
+        toast.error("Failed to send message. Please try again")
+      }
     }finally{
       setSending(false)
     }
