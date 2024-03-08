@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import toast from "react-hot-toast"
 import {throttle} from "lodash"
 
-const POLLING_FREQUENCY_MS = 2000
+const POLLING_FREQUENCY_MS = 1000
 
 function ChatPage() {
   // Atom state
@@ -34,8 +34,49 @@ function ChatPage() {
     messageEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
   }
 
+  const refetchMessages = async ()=>{
+    if (!userThread) return;
+
+    setFetching(true);
+
+    try {
+      const response = await axios.post<{
+        success: boolean;
+        error?: string;
+        messages?: ThreadMessage[];
+        has_more?:boolean,
+        nextPageParams?:{ after: string }
+      }>("/api/message/list", { threadId: userThread.threadId,paginatedParams:'' });
+
+      console.log('response값!',response)
+
+      // Validation
+      if (!response.data.success || !response.data.messages) {
+        console.error(response.data.error ?? "Unknown error.");
+        return;
+      }
+
+      let newMessages = response.data.messages;
+      setMessages(newMessages);
+
+      // 이전데이터 불러오기 위해 값 세팅
+      // 다음 페이지 있는지 boolean값
+      if(response.data.has_more){
+        setHasNextPage(response.data.has_more)
+      }
+      if(response.data.nextPageParams){
+        setPaginatedParams(response.data.nextPageParams)
+      }
+
+    } catch (error) {
+      console.error(error);
+      setMessages([]);
+    } finally {
+      setFetching(false);
+    }
+  }
+
   const fetchMessages = useCallback(async () => {
-    console.log('데이터패칭함수 호출')
     if (!userThread) return;
     
     setFetching(true);
@@ -117,7 +158,7 @@ function ChatPage() {
         moveToBottom()
     }
     // TODO : 푸시알림시, 채팅 보낼 때, 채팅 수신 시 moveToBottom()실행
-  },[messages])
+  },[messages,pollingRun])
   
 
   const startRun = async (
@@ -178,7 +219,8 @@ function ChatPage() {
         if (run.status === "completed") {
           clearInterval(intervalId);
           setPollingRun(false);
-          fetchMessages();
+          // 이전데이터가 아닌 다음데이터를 가져오기 위해 다음데이터 파라미터 초기화
+          await refetchMessages();
           return;
         } else if (run.status === "failed") {
           clearInterval(intervalId);
@@ -199,9 +241,6 @@ function ChatPage() {
   }
 
   const sendMessage = async ()=>{
-    // TODO : USER의 하루에 API 요청사용량 제한두기
-
-
     // validation
     if(!userThread || sending || !assistant){
       toast.error("Failed to send message. Invalid state.")
@@ -289,7 +328,7 @@ function ChatPage() {
   return (
     <div className='w-screen h-[calc(100vh-64px)] flex flex-col bg-black text-white'>
       {/* todo : Messages */}
-      <div className='flex-grow overflow-y-scroll p-8 space-y-2' ref={scrollBarRef} onScroll={handleScroll} >
+      <div className='flex-grow overflow-y-scroll px-8 py-2 space-y-2' ref={scrollBarRef} onScroll={handleScroll} >
         {/* fetching messages */}
         {fetching && messages.length === 0 &&
           <div className='text-center font-bold'>
@@ -348,6 +387,7 @@ function ChatPage() {
               </div>
             );
         })}
+        <div className='text-center text-white animate-bounce'>{pollingRun && "GymCarry가 작성중입니다..."}</div>
         <div ref={messageEndRef}></div>
       </div>
       {/* todo : input */}
