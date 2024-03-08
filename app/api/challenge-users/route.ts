@@ -1,4 +1,5 @@
 import { prismadb } from "@/lib/prismadb";
+import { currentUser } from "@clerk/nextjs";
 import { UserMeta, UserThread } from "@prisma/client";
 import axios from "axios";
 import { NextResponse } from "next/server";
@@ -32,10 +33,11 @@ export async function POST(request:Request) {
         );
     }
 
-    // 데이터베이스 - user정보 
+    // 데이터베이스 - userInfo정보 
     // 신체정보 등록 (키,몸무게,성별,운동경력)
     // 유저정보의 신체정보에 따라서 사용자 맞춤별 content 프롬프트 조정해서 api요청보내기
     // prompt 창에 이 사용자의 키는 ${user.신체정보?.키} 값을 동적으로 넣어줘서 사용자 맞춤 답변 구성하기
+    // todo : user정보에 따라서 다른 푸시알림을 주도록 
     
     // define work out message prompt
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -49,7 +51,9 @@ export async function POST(request:Request) {
             두 번째 부분은 운동 목록이어야 합니다: 10분 이내에 완료되도록 설계된, 어디에서나 할 수 있는 강렬하고 효과가 높은 운동입니다. 
             출력에는 이 두 가지 구성 요소만 포함되어야 하며, 다른 것은 포함되지 않습니다. 
 
-            다음은 따라야 할 출력 예입니다:
+
+
+            다음은 따라야 할 출력 예시입니다:
             
             열심히 운동 할 시간이에요! 당신은 당신이 생각하는 것보다 더 강합니다. 
             열심히 일하기 위해 오늘 아침 당신의 한계를 밀어붙이세요. 

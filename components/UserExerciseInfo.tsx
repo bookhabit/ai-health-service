@@ -2,20 +2,21 @@ import { UserInfo } from '@prisma/client'
 import React, { useMemo, useState } from 'react'
 import { Button } from './ui/button'
 import { userInfo } from 'os'
+import axios from 'axios'
+import toast from 'react-hot-toast'
 
 interface UserExerciseInfoProps {
     userExerciseInfo : UserInfo
 }
 
 interface UserInfoType {
-    weight:number,
-    height:number,
-    exerciseExperience:number
+    weight:string,
+    height:string,
+    exerciseExperience:string
     gender:"MALE"|"FEMALE",
 }
 
 const UserExerciseInfo = ({userExerciseInfo}:UserExerciseInfoProps) => {
-    console.log('user저옵',userExerciseInfo)
     const [saving,setSaving] = useState(false)
     const [weight,setWeight] = useState(userExerciseInfo.weight);
     const [height,setHeight] = useState(userExerciseInfo.height);
@@ -27,9 +28,37 @@ const UserExerciseInfo = ({userExerciseInfo}:UserExerciseInfoProps) => {
     };
 
     // onChange event
-    const handleSave = ()=>{
+    const handleSave = async ()=>{
         // api 요청 : user운동정보 저장
-        console.log('save',weight,height,exerciseExperience,genderState)
+        const data = {
+            weight,height,exerciseExperience,genderState
+        }
+        console.log('api요청보낼 data',data)
+        setSaving(true) 
+        // Save 버튼 클릭 시 사용자의 운동관련정보를 변경해주는 API
+        try{
+            const response = await axios.post<{
+                success:boolean;
+                data?:UserInfo;
+                message?:string;
+            }>("/api/userExerciseInfo",{
+                id:userExerciseInfo.id,
+                data
+            })
+
+            if(!response.data.success || !response.data.data){
+                toast.error(response.data.message ?? "Something went wrong")
+                throw new Error(response.data.message ?? "Something went wrong")
+            }
+
+            toast.success("userInfo saved!")
+
+        }catch(error){
+            toast.error("Something went wrong. Please try again.")
+            console.log(error)
+        }finally{
+            setSaving(false)
+        }
 
     }
 
@@ -90,9 +119,13 @@ const UserExerciseInfo = ({userExerciseInfo}:UserExerciseInfoProps) => {
 
                 <div className={userInfoDiv}>
                     <h2 className={`font-bold text-xl `}>성별</h2>
-                    <select value={genderState} onChange={handleGenderChange} className={userInfoInput}>
-                        <option value="MALE">MALE</option>
-                        <option value="FEMALE">FEMALE</option>
+                    <select
+                        value={genderState} 
+                        onChange={handleGenderChange} 
+                        className={userInfoInput}
+                        >
+                        <option value="MALE">남자</option>
+                        <option value="FEMALE">여자</option>
                     </select>
                 </div>
             </div>
