@@ -22,8 +22,6 @@ function ChatPage() {
   const [sending,setSending] = useState(false)
   const [pollingRun,setPollingRun] = useState(false)
 
-  console.log('messages',messages)
-
   // state for chatting
   const scrollBarRef = useRef<HTMLDivElement>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
@@ -59,7 +57,6 @@ function ChatPage() {
       }
 
       let newMessages = response.data.messages;
-      console.log('newMessages',newMessages)
 
 
       // Update messages state by concatenating old messages with new messages
@@ -328,7 +325,7 @@ function ChatPage() {
                     }
                   </div> : null}
                 <div className={`flex ${USER ? " flex-row-reverse": " flex-row"} w-full`}>
-                  <div key={message.id} className={`px-4 py-2 mb-3 ml-0 rounded-lg text-lg max-w-[250px] sm:max-w-[440px] lg:max-w-[540px] ${ USER? "bg-yellow-500 ml-auto" : "bg-gray-700"} `}>
+                  <div key={message.id} className={`px-4 py-2 mb-3  rounded-lg text-lg max-w-[250px] sm:max-w-[440px] lg:max-w-[540px] ${ USER? "bg-yellow-500 ml-0" : "bg-gray-700"} `}>
                     {message.content[0].type === "text" 
                     ? message.content[0].text.value 
                       .split("\n")

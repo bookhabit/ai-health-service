@@ -1,41 +1,43 @@
 "use client"
 
-import { ChallengePreferences } from '@prisma/client'
+import { ChallengePreferences, UserInfo } from '@prisma/client'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Switch } from './ui/switch'
 import DifficultyCard from './DifficultyCard'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import UserExerciseInfo from './UserExerciseInfo'
 
 interface ProfileContainerProps {
     challengePreferences:ChallengePreferences
+    userExerciseInfo : UserInfo
 }
 
 const difficulties = [
     {
       id: "EASY",
-      level: "Easy",
+      level: "쉬움",
       description:
-        "This challenge level is for people who are new to programming. Receive 3 challenges per day (7:30AM, 12PM, & 5:30PM EST).",
+        "이 챌린지 레벨은 운동을 처음 하는 사람들을 위한 것입니다.\n 하루에 3번의 챌린지를 진행합니다. \n (오전 7시 30분, 오후 12시 및 오후 5시 30분에 챌린지를 받습니다.)",
     },
     {
       id: "MEDIUM",
-      level: "Medium",
+      level: "중간",
       description:
-        "This challenge level is for people who are familiar with programming. Receive 4 challenges per day (7AM, 12PM, 5PM, & 8PM EST).",
+        "이 챌린지 레벨은 운동에 익숙한 사람들을 위한 것입니다.\n 하루에 4번의 챌린지를 진행합니다. \n (오전 7시,오후 12시,5시,8시에 챌린지를 받습니다.)",
     },
     {
       id: "HARD",
-      level: "Hard",
+      level: "어려움",
       description:
-        "This challenge level is for people who are experienced with programming. Receive 5 challenges per day (6AM, 9AM, 12PM, 5PM, & 8PM EST).",
+        "이 챌린지 레벨은 어느정도 운동경력이 있는 사람들을 위한 것입니다.\n 하루에 5번의 챌린지를 진행합니다. \n (오전 6시,9시,오후 12시,5시,8시에 챌린지를 받습니다.)",
     },
   ];
 
   type DifficultiesType = "EASY" | "MEDIUM" | "HARD"
 
-const ProfileContainer = ({challengePreferences}:ProfileContainerProps) => {
+const ProfileContainer = ({challengePreferences,userExerciseInfo}:ProfileContainerProps) => {
     // 푸시알림 여부 상태
     const [sendNotifications,setSendNotifications] = useState(challengePreferences.sendNotifications)
     // 사용자가 선택한 challenge난이도 level 상태
@@ -83,13 +85,13 @@ const ProfileContainer = ({challengePreferences}:ProfileContainerProps) => {
   return (
     <div className='flex flex-col'>
         <div className='flex flex-row justify-between items-center mb-4'>
-            <h1 className='font-bold text-2xl'>Challenge Level</h1>
+            <h1 className='font-bold text-2xl'>챌린지 난이도</h1>
             <Button onClick={handleSave}>{saving?"Saving...":"Save"}</Button>
         </div>
         <div className='flex flex-row items-center justify-between mb-4 p-4 shadow rounded-lg'>
             <div>
-                <h3 className='font-medium text-lg text-gray-900'>Push Notifications</h3>
-                <p>Receive push notifications when new challenges are available.</p>
+                <h3 className='font-medium text-lg text-gray-900'>푸시 알림</h3>
+                <p>챌린지를 이용할 때 알림을 받는 것을 허용합니다</p>
             </div>
             <Switch 
                 checked={sendNotifications} 
@@ -107,6 +109,8 @@ const ProfileContainer = ({challengePreferences}:ProfileContainerProps) => {
                 />
             ))}
         </div>
+        {/* todo : 푸시알림 받을 때 사용자 맞춤 운동관련정보 필드 */}
+        <UserExerciseInfo userExerciseInfo={userExerciseInfo} />
     </div>
   )
 }

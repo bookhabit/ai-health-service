@@ -39,3 +39,17 @@ model UserMeta{
   p256dh String @db.Text
   auth String @db.Text
 }
+
+model UserInfo {
+  id                 String     @id @default(uuid())
+  userId             String     @unique
+  height             String      
+  weight             String        
+  exerciseExperience String
+  gender             Gender
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}

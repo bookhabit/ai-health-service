@@ -14,7 +14,15 @@ export default async function ProfilePage() {
     throw new Error("No user")
   }
 
+  // user의 챌린지 레벨 정보
   let challengePreferences = await prismadb.challengePreferences.findUnique({
+    where:{
+      userId:user.id
+    }
+  })
+
+  // user의 운동관련 정보
+  let userExerciseInfo = await prismadb.userInfo.findUnique({
     where:{
       userId:user.id
     }
@@ -30,11 +38,28 @@ export default async function ProfilePage() {
     })
   }
 
+  // 로그인한 사용자의 운동관련 정보가 없다면 기본값으로 
+  if(!userExerciseInfo){
+    userExerciseInfo = await prismadb.userInfo.create({
+      data:{
+        userId:user.id,
+        height:'',
+        weight:'',
+        exerciseExperience:'',
+        gender:"MALE"
+      }
+    })
+  }
+
   // todo : Request new model
 
   return (
     <div className='max-w-screen-lg m-10 lg:mx-auto'>
-      <ProfileContainer challengePreferences={challengePreferences}/>
+      <ProfileContainer 
+        challengePreferences={challengePreferences}
+        userExerciseInfo={userExerciseInfo}
+      />
+      {/* todo : 사용자별 API요청 제한 */}
     </div>
   )
 }
