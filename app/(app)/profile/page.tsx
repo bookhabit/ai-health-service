@@ -1,6 +1,7 @@
 import ProfileContainer from '@/components/ProfileContainer';
 import { prismadb } from '@/lib/prismadb';
 import { currentUser } from '@clerk/nextjs'
+import Head from 'next/head';
 import React from 'react'
 import toast from 'react-hot-toast';
 
@@ -55,11 +56,20 @@ export default async function ProfilePage() {
 
   return (
     <div className='max-w-screen-lg m-10 lg:mx-auto'>
+      <Head>
+        <title>
+          Profile페이지 | 푸쉬업/스쿼트 챌린지 지정
+        </title>
+        <meta
+          name="description"
+          content="사용자는 챌린지를 지정하여 아침마다 자신의 운동챌린지를 수행할 수 있습니다."
+          key="desc"
+        />
+      </Head>
       <ProfileContainer 
         challengePreferences={challengePreferences}
         userExerciseInfo={userExerciseInfo}
       />
-      {/* todo : 사용자별 API요청 제한 */}
     </div>
   )
 }

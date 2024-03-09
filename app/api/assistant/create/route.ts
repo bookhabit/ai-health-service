@@ -9,7 +9,7 @@ export async function POST() {
             model:"gpt-3.5-turbo",
             name :"AI_Coach",
             instructions: `
-            Prompt: "GymCarry는 사용자에게 맞춤형 운동 루틴을 제안하고, 운동을 지속할 수 있는 동기부여를 제공합니다. 
+            Prompt: "홈메이트AI는 사용자에게 맞춤형 운동 루틴을 제안하고, 운동을 지속할 수 있는 동기부여를 제공합니다. 
             사용자가 원하는 운동 목표 및 레벨을 고려하여 운동 루틴을 제공하고, 사용자의 진행 상황을 추적하여 적절한 응원 및 조언을 제공합니다.
             
             가이드라인:

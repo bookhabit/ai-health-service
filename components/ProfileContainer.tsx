@@ -18,20 +18,17 @@ const difficulties = [
     {
       id: "EASY",
       level: "쉬움",
-      description:
-        "이 챌린지 레벨은 운동을 처음 하는 사람들을 위한 것입니다.\n 하루에 3번의 챌린지를 진행합니다. \n (오전 7시 30분, 오후 12시 및 오후 5시 30분에 챌린지를 받습니다.)",
+      description:`30분 동안 푸쉬업 50개`,
     },
     {
       id: "MEDIUM",
       level: "중간",
-      description:
-        "이 챌린지 레벨은 운동에 익숙한 사람들을 위한 것입니다.\n 하루에 4번의 챌린지를 진행합니다. \n (오전 7시,오후 12시,5시,8시에 챌린지를 받습니다.)",
+      description:"30분 동안 푸쉬업 50개,스쿼트 50개",
     },
     {
       id: "HARD",
       level: "어려움",
-      description:
-        "이 챌린지 레벨은 어느정도 운동경력이 있는 사람들을 위한 것입니다.\n 하루에 5번의 챌린지를 진행합니다. \n (오전 6시,9시,오후 12시,5시,8시에 챌린지를 받습니다.)",
+      description:"30분 동안 푸쉬업 100개,스쿼트 100개",
     },
   ];
 
@@ -88,15 +85,19 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo}:ProfileContain
             <h1 className='font-bold text-2xl'>챌린지 난이도</h1>
             <Button onClick={handleSave}>{saving?"Saving...":"Save"}</Button>
         </div>
-        <div className='flex flex-row items-center justify-between mb-4 p-4 shadow rounded-lg'>
-            <div>
-                <h3 className='font-medium text-lg text-gray-900'>푸시 알림</h3>
-                <p>챌린지를 이용할 때 알림을 받는 것을 허용합니다</p>
+        <div className='mb-4 p-4 shadow rounded-lg'>
+            <div className='flex flex-row items-center justify-between'>
+                <h3 className=' font-semibold text-lg text-gray-900 mb-3'>알림</h3>
+                <Switch 
+                    checked={sendNotifications} 
+                    onCheckedChange={handleToggleNotifications}
+                />
             </div>
-            <Switch 
-                checked={sendNotifications} 
-                onCheckedChange={handleToggleNotifications}
-            />
+            <div className='flex flex-col gap-2'>
+                <p>챌린지를 수행할 때 시작 알림을 받는 것을 허용합니다</p>
+                <p>챌린지는 매일 아침 매일 아침 7시부터 7시 30분까지 수행합니다.</p>
+                <p>챌린지 시작 알림은 챌린지 시작 전 10분 전 6시 50분에 알림을 전송합니다.</p>
+            </div>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             {difficulties.map((difficulty)=>(
@@ -109,7 +110,6 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo}:ProfileContain
                 />
             ))}
         </div>
-        {/* todo : 푸시알림 받을 때 사용자 맞춤 운동관련정보 필드 */}
         <UserExerciseInfo userExerciseInfo={userExerciseInfo} />
     </div>
   )

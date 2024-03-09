@@ -31,10 +31,10 @@ const NotificationModal = ({
           Allow to send push notifications
         </h2>
         <p className="mb-4">
-          Receive notifications from GymCarry AI when new workouts are available.
+          Receive notifications from 홈메이트 AI when new workouts are available.
         </p>
         <button
-          className="bg-yellow-500 text-white py-2 px-4 rounded-lg"
+          className="bg-mainColor text-white py-2 px-4 rounded-lg"
           onClick={requestNotificationPermission}
         >
           Allow

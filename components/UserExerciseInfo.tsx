@@ -72,10 +72,11 @@ const UserExerciseInfo = ({userExerciseInfo}:UserExerciseInfoProps) => {
     return (
         <div className='mt-8'>
             <div className='flex flex-row justify-between items-center mb-4'>
-                <h1 className='font-bold text-2xl'>운동 관련 정보</h1>
+                <h1 className='font-bold text-2xl'>운동 기록</h1>
                 <Button onClick={handleSave}>{saving?"Saving...":"Save"}</Button>
             </div>
-            <p className='mb-6 text-gray-500'>알림기능을 제공할 때 사용자의 정보에 맞춤화된 운동을 추천해줍니다.</p>
+            <p className='mb-6 text-gray-500'>챌린지를 통해 변화되는 자신의 모습을 기록하세요.</p>
+            {/* 사용자 정보 - 키,몸무게,운동경력,성별 */}
             <div className='grid grid-cols-1 md:grid-cols-4 gap-3'>
                 <div className={userInfoDiv}>
                     <h2 className={`font-bold text-xl`}>키</h2>
@@ -129,6 +130,12 @@ const UserExerciseInfo = ({userExerciseInfo}:UserExerciseInfoProps) => {
                     </select>
                 </div>
             </div>
+            {/* TODO : 캘린더 - 챌린지 기록 */}
+            {/* 캘린더에 날짜별로 선택할 수 있도록
+            1. 챌린지 성공/실패 
+            2. 챌린지 내용 - 난이도와 수행운동 개수
+            3. 운동시작,운동끝 챌린지 성공하면 이 캘린더에 챌린지 성공여부 및 챌린지 난이도 설정
+            4. 챌린지 내용의 수행운동 개수는 사용자가 지정하기 */}
         </div>
     )
 }

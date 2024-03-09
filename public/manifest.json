@@ -4,8 +4,8 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "Gym Carray AI Coach",
-    "short_name": "Gym Carray AI",
+    "name": "홈메이트 - 운동상담 AI & 운동 동기부여 & 미라클 모닝 & 푸쉬업|스쿼트 챌린지",
+    "short_name": "홈메이트",
     "icons": [
         {
             "src": "/icon-192x192.png",

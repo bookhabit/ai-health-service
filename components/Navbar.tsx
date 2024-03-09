@@ -22,7 +22,7 @@ function Navbar() {
     return (
         <div className='p-4 flex flex-row justify-between items-center bg-black text-white'>
             <Link href="/">
-                <h1 className='text-2xl font-bold'>GymCarry AI</h1>
+                <h1 className='text-2xl font-bold'>홈메이트 AI</h1>
             </Link>
             <div className='flex gap-x-6 text-lg items-center'>
                 {routes.map((route,index)=>(
@@ -30,7 +30,7 @@ function Navbar() {
                         key={index}
                         href={route.path}
                         className={
-                            pathname === route.path ? "border-b-2 border-yellow-500": ""
+                            pathname === route.path ? "border-b-2 border-mainColor": ""
                         }
                     >
                         {route.name}

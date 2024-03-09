@@ -7,6 +7,7 @@ import { Run, Thread, ThreadMessage } from 'openai/resources/beta/threads/index.
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import toast from "react-hot-toast"
 import {throttle} from "lodash"
+import Head from 'next/head'
 
 const POLLING_FREQUENCY_MS = 1000
 
@@ -327,6 +328,16 @@ function ChatPage() {
 
   return (
     <div className='w-screen h-[calc(100vh-64px)] flex flex-col bg-black text-white'>
+      <Head>
+        <title>
+          AI 운동상담 | 운동코칭 | 운동 동기부여
+        </title>
+        <meta
+          name="description"
+          content="AI에게 운동 관련해서 질문하면 해당질문에 대해 답변해주고 동기부여를 받을 수 있습니다."
+          key="desc"
+        />
+      </Head>
       {/* todo : Messages */}
       <div className='flex-grow overflow-y-scroll px-8 py-2 space-y-2' ref={scrollBarRef} onScroll={handleScroll} >
         {/* fetching messages */}
@@ -375,7 +386,7 @@ function ChatPage() {
                     }
                   </div> : null}
                 <div className={`flex ${USER ? " flex-row-reverse": " flex-row"} w-full`}>
-                  <div key={message.id} className={`px-4 py-2 mb-3  rounded-lg text-lg max-w-[250px] sm:max-w-[440px] lg:max-w-[540px] ${ USER? "bg-yellow-500 ml-0" : "bg-gray-700"} `}>
+                  <div key={message.id} className={`px-4 py-2 mb-3  rounded-lg text-lg max-w-[250px] sm:max-w-[440px] lg:max-w-[540px] ${ USER? "bg-mainColor ml-0" : "bg-gray-700"} `}>
                     {message.content[0].type === "text" 
                     ? message.content[0].text.value 
                       .split("\n")
@@ -387,7 +398,7 @@ function ChatPage() {
               </div>
             );
         })}
-        <div className='text-center text-white animate-bounce'>{pollingRun && "GymCarry가 작성중입니다..."}</div>
+        <div className='text-center text-white animate-bounce'>{pollingRun && "홈메이트가 작성중입니다..."}</div>
         <div ref={messageEndRef}></div>
       </div>
       {/* todo : input */}
@@ -402,7 +413,7 @@ function ChatPage() {
           />
           <button 
             disabled={!userThread?.threadId || !assistant || sending ||!message.trim()} 
-            className=' ml-4 bg-yellow-500 text-white px-4 py-2 rounded-full focus:outline-none disabled:bg-yellow-700'
+            className=' ml-4 bg-mainColor text-white px-4 py-2 rounded-full focus:outline-none disabled:bg-yellow-700'
             onClick={sendMessage}
             >
               {sending ? "Sending...":pollingRun ? "Polling Run..." : "Send" }
