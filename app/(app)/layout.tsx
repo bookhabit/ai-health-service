@@ -33,7 +33,7 @@ export default function AppRootLayout({
       
       // 아침 7시에 모달을 보여줍니다.
       // currentHour === 7 && currentMinute >= 0 && currentMinute < 30
-      if (currentHour === 7 && currentMinute >= 0 && currentMinute < 30 ) {
+      if (currentHour === 4 && currentMinute >= 0 && currentMinute < 30 ) {
         console.log('모달창 오픈')
         setIsChallengeModalVisible(true);
       } else {
@@ -41,16 +41,16 @@ export default function AppRootLayout({
       }
     };
 
-    // 모달창 닫기
-    const closeChallengeModal = ()=>{
-      setIsChallengeModalVisible(false)
-    }
-
     // 페이지가 로드될 때와 1분마다 시간을 확인하여 모달을 보여줍니다.
     checkTimeAndShowModal();
     const interval = setInterval(checkTimeAndShowModal, 60000); // 1분마다 실행
     return () => clearInterval(interval);
   }, []);
+
+  // 모달창 닫기
+  const closeChallengeModal = ()=>{
+    setIsChallengeModalVisible(false)
+  }
 
   // hooks
   userServiceWorker();
@@ -152,7 +152,7 @@ export default function AppRootLayout({
       toast.success("You will now receive notifications")
     }
   }
-
+console.log('isChallengeModalVisible',isChallengeModalVisible)
   return (
     <div className="flex flex-col w-full h-full">
         <Navbar/>
@@ -163,9 +163,9 @@ export default function AppRootLayout({
             saveSubscription={saveSubscription}
           />
         )}
-        {!isChallengeModalVisible && (
+        {isChallengeModalVisible && (
           <MorningChallenge 
-            closeModal={setIsChallengeModalVisible}
+            closeModal={closeChallengeModal}
           />
         )}
         <Toaster/>

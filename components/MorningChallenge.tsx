@@ -6,7 +6,7 @@ import axios from 'axios';
 import { ChallengePreferences } from '@prisma/client';
 
 interface MorningChallengeProps{
-    closeModal:Dispatch<SetStateAction<boolean>>
+    closeModal:() => void
 }
 
 const motivationalQuotes = [
@@ -57,6 +57,7 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
     const [showQuotes,setShowQuotes] = useState(false)
     const [currentQuote,setCurrentQuote] = useState('')
     const [userData,setUserData] = useState<ChallengePreferences>()
+    const [timerCount,setTimerCount] = useState(30)
 
     // 사용자의 챌린지 난이도 구하는 API 호출
     useEffect(()=>{
@@ -100,18 +101,18 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
             // currentHour === 7 && currentMinute >= 0 && currentMinute < 30
             console.log(endWorkout)
             console.log(currentMinute)
-            if ( currentHour === 3 && currentMinute >= 0 && currentMinute < 30 ) {
+            if ( currentHour === 4 && currentMinute >= 0 && currentMinute < 30 ) {
                 setShowQuotes(true)
                 setEndWorkout(false)
-            } else if(currentHour === 3 && currentMinute >= 31 && currentMinute < 35) {
-                // 7시 31분부터 35분까지 모달창
+            } else if(currentHour === 4 && currentMinute >= 30 && currentMinute < 35) {
+                // 7시 30분부터 35분까지 모달창
                 setShowQuotes(false) // 동기부여 메세지 창 닫기
                 setEndWorkout(true); // 운동 끝 버튼 보여주기
                 // 타이머 UI부분에 운동 수고했다고 축하메세지 + 하루 기분좋게 시작 메세지
                 setEndAlarm(true)
-            }else{
+            }else if(currentHour === 4 && currentMinute > 35){
                 // 7시 35분이 지나면 모달 닫기
-                closeModal(false)
+                closeModal()
             }
         };
         // 동기부여 메세지
@@ -137,25 +138,26 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
         console.log('운동 끝')        
         // 챌린지 데이터 저장 (챌린지 난이도와 성공여부)
 
-        // 모달창 닫고 전면광고 보여주기
-        closeModal(false)
+        // 모달창 닫기  TODO : 전면광고 보여주기
+        closeModal()
     }
     
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 w-screen p-11 ">
-            <div className="bg-white rounded-lg p-8 w-full h-full flex flex-col gap-4 items-center">
-                <h2 className="text-2xl text-center font-bold mb-4 text-mainColor">Morning Workout Challenge</h2>
-                <div className='shadow-md w-full p-6 text-md flex flex-col gap-4 items-center'>
-                    <p className='font-bold mb-2'>오늘의 챌린지</p>
+            <div className=" bg-[#30384b] rounded-lg p-8 w-full h-full flex flex-col gap-4 items-center text-white">
+                <h2 className="text-2xl text-center font-bold mb-4 ">Morning Workout Challenge</h2>
+                <div className='bg-[#353e58]  shadow-md w-full max-w-md px-6 py-8 text-md flex flex-col gap-4 items-center'>
+                    <p className='font-bold mb-2'>오늘의 운동</p>
                     <p>푸쉬업 : {convertLevelToNumber()} 개</p>
                     <p>스쿼트 : {convertLevelToNumber()} 개</p>
                 </div>
                 {/* todo : 30분 타이머 UI */}
-                <div className='flex-1 w-full flex flex-col justify-center items-center'>
+                <div className='w-full my-8 flex flex-col justify-center items-center'>
                     {endAlarm ? (
-                        // 운동 끝 : 격려메세지
+                        // TODO : 운동 끝 - 격려메세지 (애니메이션 효과)
+                        // 배경이미지 - 축하하는
                         <div>
-                            <p>오늘도 끝까지 운동하느라 고생하셨습니다</p>
+                            <p>축하합니다. 챌린지를 성공하셨습니다. 오늘도 즐거운 하루 되세요!</p>
                         </div>
                     ) : (
                         <Timer/>
@@ -163,12 +165,11 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
                 </div>
                 <div className="mt-4 text-center">
                     {/* 운동시작하면 동기부여메세지,운동끝버튼 */}
-                    
                     {showQuotes && currentQuote && (
-                        <p className='text-xl text-subColor font-bold  animate-bounce'>{currentQuote}</p>
+                        <p className='text-xl  font-bold animate-bounce'>{currentQuote}</p>
                     )}
                     {endWorkout && (
-                        <button className="px-6 py-4 font-bold text-white rounded bg-mainColor hover:bg-subColor ml-4" onClick={onClickEnd}>운동 끝</button>
+                        <button className="px-6 py-4 font-bold text-[#30384b] rounded bg-white hover:bg-[#edf1ff] ml-4" onClick={onClickEnd}>운동 끝</button>
                     )}
                 </div>
             </div>
