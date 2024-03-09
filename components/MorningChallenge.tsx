@@ -2,6 +2,8 @@
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import Timer from './Timer';
+import axios from 'axios';
+import { ChallengePreferences } from '@prisma/client';
 
 interface MorningChallengeProps{
     closeModal:Dispatch<SetStateAction<boolean>>
@@ -54,9 +56,37 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
     const [endAlarm,setEndAlarm] = useState(false)
     const [showQuotes,setShowQuotes] = useState(false)
     const [currentQuote,setCurrentQuote] = useState('')
+    const [userData,setUserData] = useState<ChallengePreferences>()
 
     // 사용자의 챌린지 난이도 구하는 API 호출
+    useEffect(()=>{
+        const getUserChallengeLevel = async ()=>{
+            try{
+                const response = await axios.post('/api/user-challenge-level')
+                console.log('유저 챌린지 레벨 가져오는 api response',response)
+                const userdata = response.data.userChallengeLevel as ChallengePreferences
+                setUserData(userdata)
+            }catch(error){
+                console.log(error)
+            }
+        }
+        getUserChallengeLevel()
+    },[])
+    console.log('userdata',userData)
+
     // 챌린지 난이도에 따라서 UI 다르게 보여줌 
+    const convertLevelToNumber = ()=>{
+        // EASY : 푸쉬업 50개 스쿼트 50개
+        // MEDIUM : 푸쉬업 100개 스쿼트 100개
+        // HARD : 푸쉬업 200개 스쿼트 200개
+        if(userData?.challengeId==="EASY"){
+            return 50
+        }else if(userData?.challengeId==="MEDIUM"){
+            return 100
+        }else if(userData?.challengeId==="MEDIUM"){
+            return 200
+        }
+    }
     
     // 운동 시작 끝 버튼 
     useEffect(() => {
@@ -70,10 +100,10 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
             // currentHour === 7 && currentMinute >= 0 && currentMinute < 30
             console.log(endWorkout)
             console.log(currentMinute)
-            if ( currentHour === 2 && currentMinute >= 0 && currentMinute < 30 ) {
+            if ( currentHour === 3 && currentMinute >= 0 && currentMinute < 30 ) {
                 setShowQuotes(true)
                 setEndWorkout(false)
-            } else if(currentHour === 0 && currentMinute >= 31 && currentMinute < 35) {
+            } else if(currentHour === 3 && currentMinute >= 31 && currentMinute < 35) {
                 // 7시 31분부터 35분까지 모달창
                 setShowQuotes(false) // 동기부여 메세지 창 닫기
                 setEndWorkout(true); // 운동 끝 버튼 보여주기
@@ -115,10 +145,10 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 w-screen p-11 ">
             <div className="bg-white rounded-lg p-8 w-full h-full flex flex-col gap-4 items-center">
                 <h2 className="text-2xl text-center font-bold mb-4 text-mainColor">Morning Workout Challenge</h2>
-                <div className=' shadow-md p-6 text-md'>
-                    <p className='text-center font-bold mb-2'>오늘의 챌린지</p>
-                    <p>푸쉬업 : (사용자 챌린지 난이도 개수 )</p>
-                    <p>스쿼트 : (사용자 챌린지 난이도 개수 )</p>
+                <div className='shadow-md w-full p-6 text-md flex flex-col gap-4 items-center'>
+                    <p className='font-bold mb-2'>오늘의 챌린지</p>
+                    <p>푸쉬업 : {convertLevelToNumber()} 개</p>
+                    <p>스쿼트 : {convertLevelToNumber()} 개</p>
                 </div>
                 {/* todo : 30분 타이머 UI */}
                 <div className='flex-1 w-full flex flex-col justify-center items-center'>

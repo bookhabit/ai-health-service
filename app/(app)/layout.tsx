@@ -33,7 +33,7 @@ export default function AppRootLayout({
       
       // 아침 7시에 모달을 보여줍니다.
       // currentHour === 7 && currentMinute >= 0 && currentMinute < 30
-      if (currentHour === 2 && currentMinute >= 0 && currentMinute < 30 ) {
+      if (currentHour === 7 && currentMinute >= 0 && currentMinute < 30 ) {
         console.log('모달창 오픈')
         setIsChallengeModalVisible(true);
       } else {
@@ -163,7 +163,7 @@ export default function AppRootLayout({
             saveSubscription={saveSubscription}
           />
         )}
-        {isChallengeModalVisible && (
+        {!isChallengeModalVisible && (
           <MorningChallenge 
             closeModal={setIsChallengeModalVisible}
           />
