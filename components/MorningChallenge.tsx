@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction, Suspense, useEffect, useState } from 'react'
 import Timer from './Timer';
 import axios from 'axios';
 import { ChallengePreferences } from '@prisma/client';
@@ -101,16 +101,16 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
             // currentHour === 7 && currentMinute >= 0 && currentMinute < 30
             console.log(endWorkout)
             console.log(currentMinute)
-            if ( currentHour === 4 && currentMinute >= 0 && currentMinute < 30 ) {
+            if ( currentHour === 7 && currentMinute >= 0 && currentMinute < 30 ) {
                 setShowQuotes(true)
                 setEndWorkout(false)
-            } else if(currentHour === 4 && currentMinute >= 30 && currentMinute < 35) {
+            } else if(currentHour === 7 && currentMinute >= 30 && currentMinute < 35) {
                 // 7시 30분부터 35분까지 모달창
                 setShowQuotes(false) // 동기부여 메세지 창 닫기
                 setEndWorkout(true); // 운동 끝 버튼 보여주기
                 // 타이머 UI부분에 운동 수고했다고 축하메세지 + 하루 기분좋게 시작 메세지
                 setEndAlarm(true)
-            }else if(currentHour === 4 && currentMinute > 35){
+            }else if(currentHour === 7 && currentMinute > 35){
                 // 7시 35분이 지나면 모달 닫기
                 closeModal()
             }
@@ -146,7 +146,7 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 w-screen p-11 ">
             <div className=" bg-[#30384b] rounded-lg p-8 w-full h-full flex flex-col gap-4 items-center text-white">
                 <h2 className="text-2xl text-center font-bold mb-4 ">Morning Workout Challenge</h2>
-                <div className='bg-[#353e58]  shadow-md w-full max-w-md px-6 py-8 text-md flex flex-col gap-4 items-center'>
+                <div className='bg-[#353e58]  shadow-md w-full max-w-md px-3 py-4 text-md flex flex-col gap-3 items-center text-lg'>
                     <p className='font-bold mb-2'>오늘의 운동</p>
                     <p>푸쉬업 : {convertLevelToNumber()} 개</p>
                     <p>스쿼트 : {convertLevelToNumber()} 개</p>
@@ -157,7 +157,12 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
                         // TODO : 운동 끝 - 격려메세지 (애니메이션 효과)
                         // 배경이미지 - 축하하는
                         <div>
-                            <p>축하합니다. 챌린지를 성공하셨습니다. 오늘도 즐거운 하루 되세요!</p>
+                            <video src='/challenge_success.mp4' autoPlay loop muted />
+                            <div className='flex flex-col justify-center items-center gap-3 mt-8 font-bold'>
+                                <p className=' animate-bounce text-lg'>축하합니다.</p> 
+                                <p>챌린지를 성공하셨습니다.</p>
+                                <p>오늘도 즐거운 하루 되시고 내일도 참여해주세요!</p>
+                            </div>
                         </div>
                     ) : (
                         <Timer/>
