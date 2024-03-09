@@ -66,10 +66,10 @@ export default async function ProfilePage() {
           key="desc"
         />
       </Head>
-      <ProfileContainer 
+      {/* <ProfileContainer 
         challengePreferences={challengePreferences}
         userExerciseInfo={userExerciseInfo}
-      />
+      /> */}
     </div>
   )
 }

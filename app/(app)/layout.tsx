@@ -1,6 +1,7 @@
 "use client"
 
 import { assistantAtom, userThreadAtom } from "@/atoms";
+import MorningChallenge from "@/components/MorningChallenge";
 import Navbar from "@/components/Navbar";
 import NotificationModal from "@/components/NotificationModal";
 import userServiceWorker from "@/hooks/useServiceWorker";
@@ -21,6 +22,35 @@ export default function AppRootLayout({
 
   // State
   const [isNotificationModalVisible,setIsNotificationModalVisible] = useState(false)
+  const [isChallengeModalVisible,setIsChallengeModalVisible] = useState(true)
+
+  // 하루 중 시간 체크하기
+  useEffect(() => {
+    const checkTimeAndShowModal = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      // 아침 7시에 모달을 보여줍니다.
+      // currentHour === 7 && currentMinute >= 0 && currentMinute < 30
+      if (currentHour === 2 && currentMinute >= 0 && currentMinute < 30 ) {
+        console.log('모달창 오픈')
+        setIsChallengeModalVisible(true);
+      } else {
+        setIsChallengeModalVisible(false); // 아침 7시 30분 이후에 모달을 닫습니다.
+      }
+    };
+
+    // 모달창 닫기
+    const closeChallengeModal = ()=>{
+      setIsChallengeModalVisible(false)
+    }
+
+    // 페이지가 로드될 때와 1분마다 시간을 확인하여 모달을 보여줍니다.
+    checkTimeAndShowModal();
+    const interval = setInterval(checkTimeAndShowModal, 60000); // 1분마다 실행
+    return () => clearInterval(interval);
+  }, []);
 
   // hooks
   userServiceWorker();
@@ -131,6 +161,11 @@ export default function AppRootLayout({
           <NotificationModal
             onRequestClose={handleNotificationModalClose}
             saveSubscription={saveSubscription}
+          />
+        )}
+        {isChallengeModalVisible && (
+          <MorningChallenge 
+            closeModal={setIsChallengeModalVisible}
           />
         )}
         <Toaster/>

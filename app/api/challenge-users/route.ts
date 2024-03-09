@@ -33,6 +33,10 @@ export async function POST(request:Request) {
         );
     }
     
+    // TODO : 챌린지 전 시작 알림
+    // 전에 설정한 work out genertate를 하지 말고
+    // 사용자의 챌린지 난이도에 따라서 쉬움,중간,어려움 3개의 프롬프트를 미리 작성하고 이 정적 프롬프트를 사용자들에게 알림을 보내준다
+
     // define work out message prompt
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         {

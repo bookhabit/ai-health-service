@@ -18,17 +18,17 @@ const difficulties = [
     {
       id: "EASY",
       level: "쉬움",
-      description:`30분 동안 푸쉬업 50개`,
+      description:`30분 동안 푸쉬업 50개,스쿼트 50개`,
     },
     {
       id: "MEDIUM",
       level: "중간",
-      description:"30분 동안 푸쉬업 50개,스쿼트 50개",
+      description:"30분 동안 푸쉬업 100개,스쿼트 100개",
     },
     {
       id: "HARD",
       level: "어려움",
-      description:"30분 동안 푸쉬업 100개,스쿼트 100개",
+      description:"30분 동안 푸쉬업 200개,스쿼트 200개",
     },
   ];
 
@@ -82,7 +82,7 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo}:ProfileContain
   return (
     <div className='flex flex-col'>
         <div className='flex flex-row justify-between items-center mb-4'>
-            <h1 className='font-bold text-2xl'>챌린지 난이도</h1>
+            <h1 className='font-bold text-2xl'>챌린지 난이도 설정</h1>
             <Button onClick={handleSave}>{saving?"Saving...":"Save"}</Button>
         </div>
         <div className='mb-4 p-4 shadow rounded-lg'>

@@ -28,22 +28,22 @@ const NotificationModal = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg text-center">
         <h2 className="font-bold text-xl mb-4">
-          Allow to send push notifications
+          푸시 알림을 받는 것을 허용합니다
         </h2>
         <p className="mb-4">
-          Receive notifications from 홈메이트 AI when new workouts are available.
+          홈메이트 AI에게서 아침 7시 푸쉬업 | 스쿼트 챌린지 시작 10분 전 시작 알림을 받는 것을 허용합니다.
         </p>
         <button
           className="bg-mainColor text-white py-2 px-4 rounded-lg"
           onClick={requestNotificationPermission}
         >
-          Allow
+          허용
         </button>
         <button
           className="ml-4 py-2 px-4 rounded-lg"
           onClick={() => onRequestClose(false)}
         >
-          Close
+          닫기
         </button>
       </div>
     </div>,
