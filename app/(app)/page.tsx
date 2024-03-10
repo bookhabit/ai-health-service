@@ -15,7 +15,7 @@ function ChatPage() {
   // Atom state
   const [userThread] = useAtom(userThreadAtom)
   const [assistant] = useAtom(assistantAtom)
-
+  
   // state
   const [fetching,setFetching] = useState(false)
   const [messages,setMessages] = useState<ThreadMessage[]>([])

@@ -17,10 +17,11 @@ export async function POST(req:Request){
     const currentDate = new Date();
     const dailyRequestUpdatedAt = new Date(userThread.dailyRequestUpdatedAt); // userThread에서 가져온 dailyRequestUpdatedAt 값
     
-    const diffInMilliseconds = Math.abs(currentDate.getTime() - dailyRequestUpdatedAt.getTime());
-    const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
-    
-    if (diffInHours >= 24) {
+    // dailyRequestUpdatedAt와 currentDate의 날짜를 비교하여 하루가 지났는지 확인
+    const isNextDay = dailyRequestUpdatedAt.getDate() !== currentDate.getDate();
+
+    if (isNextDay) {
+        // 하루가 지났을 때
         await prismadb.userThread.update({
             where: {
                 id: userThread.id,
@@ -31,19 +32,15 @@ export async function POST(req:Request){
                 dailyRequestUpdatedAt: currentDate, // 현재 시간으로 업데이트
             },
         });
-        console.log('api요청한지 하루 지나서 리셋')
     }
-
-
-    // 일일 api 요청 5개 이상 제한
-    console.log('메세지 create API안에 userThread')
-    if(userThread.dailyRequestCount > 5){
+    if (!isNextDay && userThread.dailyRequestCount > 5) {
+        // 일일 api 요청 5개 이상 제한
         return NextResponse.json(
-            {error : "하루에 질문은 5개까지 할 수 있습니다. 더 많은 질문을 하고 싶다면 프리미엄 서비스를 이용해주세요 (아직 프리미엄 서비스를 만들지는 못했고 곧 구현할 예정입니다.)",success:false},
-            {status:422}
-        )
+            { error: "하루에 질문은 5개까지 할 수 있습니다. 더 많은 질문을 하고 싶다면 프리미엄 서비스를 이용해주세요 (아직 프리미엄 서비스를 만들지는 못했고 곧 구현할 예정입니다.)", success: false },
+            { status: 422 }
+        );
     }
-
+    
     const openai = new OpenAI()
 
     // 메세지 생성
@@ -72,7 +69,6 @@ export async function POST(req:Request){
             }
         })
 
-        console.log("from openai",threadMessage)
         return NextResponse.json({message:threadMessage,success:true},{status:201})
     }catch(error){
         console.log(error)
