@@ -22,7 +22,7 @@ export default function AppRootLayout({
 
   // State
   const [isNotificationModalVisible,setIsNotificationModalVisible] = useState(false)
-  const [isChallengeModalVisible,setIsChallengeModalVisible] = useState(true)
+  const [isChallengeModalVisible,setIsChallengeModalVisible] = useState(false)
 
   // 하루 중 시간 체크하기
   useEffect(() => {
@@ -152,6 +152,7 @@ export default function AppRootLayout({
       toast.success("You will now receive notifications")
     }
   }
+
 console.log('isChallengeModalVisible',isChallengeModalVisible)
   return (
     <div className="flex flex-col w-full h-full">

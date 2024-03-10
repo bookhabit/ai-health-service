@@ -58,7 +58,7 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
     const [currentQuote,setCurrentQuote] = useState('')
     const [userData,setUserData] = useState<ChallengePreferences>()
     const [timerCount,setTimerCount] = useState(30)
-
+    
     // 사용자의 챌린지 난이도 구하는 API 호출
     useEffect(()=>{
         const getUserChallengeLevel = async ()=>{
