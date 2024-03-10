@@ -5,7 +5,7 @@ self.addEventListener("push", function (event) {
   const data = event.data.text();
   const title = data || "A new message!";
   const options = {
-    body: data.body || "You have a new notification.",
+    body: data.body || "홈메이트에게서 알림이 왔습니다.",
     icon: "/icons/icon-192x192.png",
     badge: "/icons/badge-72x72.png",
   };

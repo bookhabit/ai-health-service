@@ -11,6 +11,12 @@ export async function POST(request:Request) {
     const {subscription,message} = await request.json()
 
     console.log("Sending push notification to",subscription,message)
+    if(message === undefined){
+        return NextResponse.json(
+            {success:false,message:"error sending push notification"},
+            {status:500}
+        )
+    }
 
     try{
         await webPush.sendNotification(subscription,message)

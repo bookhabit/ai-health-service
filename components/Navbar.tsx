@@ -22,11 +22,11 @@ function Navbar() {
     return (
         <div className='p-4 flex flex-row justify-between items-center bg-black text-white'>
             <Link href="/">
-                    <h1 className='text-2xl font-bold'>
+                    <h1 className='text-lg sm:text-2xl font-bold'>
                         HomeMate AI
                     </h1>
             </Link>
-            <div className='flex gap-x-6 text-lg items-center'>
+            <div className='flex gap-x-3 sm:gap-x-6 text-lg items-center'>
                 {routes.map((route,index)=>(
                     <Link
                         key={index}
