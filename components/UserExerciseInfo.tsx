@@ -130,12 +130,6 @@ const UserExerciseInfo = ({userExerciseInfo}:UserExerciseInfoProps) => {
                     </select>
                 </div>
             </div>
-            {/* TODO : 캘린더 - 챌린지 기록 */}
-            {/* 캘린더에 날짜별로 선택할 수 있도록
-            1. 챌린지 성공/실패 
-            2. 챌린지 내용 - 난이도와 수행운동 개수
-            3. 운동시작,운동끝 챌린지 성공하면 이 캘린더에 챌린지 성공여부 및 챌린지 난이도 설정
-            4. 챌린지 내용의 수행운동 개수는 사용자가 지정하기 */}
         </div>
     )
 }

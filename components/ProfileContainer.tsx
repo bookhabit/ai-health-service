@@ -1,6 +1,6 @@
 "use client"
 
-import { ChallengePreferences, UserInfo } from '@prisma/client'
+import { ChallengePreferences, UserChallengeData, UserInfo } from '@prisma/client'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Switch } from './ui/switch'
@@ -8,10 +8,14 @@ import DifficultyCard from './DifficultyCard'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import UserExerciseInfo from './UserExerciseInfo'
+import { useRouter } from 'next/navigation'
+import UserChallenge from './UserChallenge'
+
 
 interface ProfileContainerProps {
     challengePreferences:ChallengePreferences
     userExerciseInfo : UserInfo
+    userChallengeInfo : UserChallengeData[]
 }
 
 const difficulties = [
@@ -34,12 +38,14 @@ const difficulties = [
 
   type DifficultiesType = "EASY" | "MEDIUM" | "HARD"
 
-const ProfileContainer = ({challengePreferences,userExerciseInfo}:ProfileContainerProps) => {
+const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeInfo}:ProfileContainerProps) => {
     // 푸시알림 여부 상태
     const [sendNotifications,setSendNotifications] = useState(challengePreferences.sendNotifications)
     // 사용자가 선택한 challenge난이도 level 상태
     const [selectedDifficulty,setSeletedDifficulty] = useState(challengePreferences.challengeId)
     const [saving,setSaving] = useState(false)
+
+    const router = useRouter();
 
     const handleToggleNotifications = ()=>{
         setSendNotifications((prev)=>!prev)
@@ -80,7 +86,7 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo}:ProfileContain
     }
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col gap-2'>
         <div className='flex flex-row justify-between items-center mb-4'>
             <h1 className='font-bold text-2xl'>챌린지 난이도 설정</h1>
             <Button onClick={handleSave}>{saving?"Saving...":"Save"}</Button>
@@ -111,6 +117,12 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo}:ProfileContain
             ))}
         </div>
         <UserExerciseInfo userExerciseInfo={userExerciseInfo} />
+        <div className='flex flex-col gap-2 mt-6'>
+            <h1 className='font-bold text-2xl'>챌린지 기록</h1>
+            <UserChallenge
+                userChallengeInfo={userChallengeInfo}
+            />
+        </div>
     </div>
   )
 }

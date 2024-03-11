@@ -6,7 +6,6 @@ import React from 'react'
 import toast from 'react-hot-toast';
 
 export default async function ProfilePage() {
-  // todo : current state 
   const user = await currentUser();
 
   // 인증된 사용자인지 구분 - profile페이지
@@ -24,6 +23,13 @@ export default async function ProfilePage() {
 
   // user의 운동관련 정보
   let userExerciseInfo = await prismadb.userInfo.findUnique({
+    where:{
+      userId:user.id
+    }
+  })
+
+  // user의 챌린지 기록 정보
+  const userChallengeInfo = await prismadb.userChallengeData.findMany({
     where:{
       userId:user.id
     }
@@ -50,9 +56,7 @@ export default async function ProfilePage() {
         gender:"MALE"
       }
     })
-  }
-
-  // todo : Request new model
+  }  
 
   return (
     <div className='max-w-screen-lg m-10 lg:mx-auto'>
@@ -69,6 +73,7 @@ export default async function ProfilePage() {
       <ProfileContainer 
         challengePreferences={challengePreferences}
         userExerciseInfo={userExerciseInfo}
+        userChallengeInfo={userChallengeInfo}
       />
     </div>
   )
