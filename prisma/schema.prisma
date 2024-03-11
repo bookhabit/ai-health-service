@@ -55,3 +55,11 @@ enum Gender {
   MALE
   FEMALE
 }
+
+model UserChallengeData {
+  id                 String     @id @default(uuid())
+  userId             String     
+  challengeId String
+  success Boolean
+  createdAt DateTime @default(now())
+}

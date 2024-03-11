@@ -4,6 +4,7 @@ import React, { Dispatch, SetStateAction, Suspense, useEffect, useState } from '
 import Timer from './Timer';
 import axios from 'axios';
 import { ChallengePreferences } from '@prisma/client';
+import toast from 'react-hot-toast';
 
 interface MorningChallengeProps{
     closeModal:() => void
@@ -57,14 +58,13 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
     const [showQuotes,setShowQuotes] = useState(false)
     const [currentQuote,setCurrentQuote] = useState('')
     const [userData,setUserData] = useState<ChallengePreferences>()
-    const [timerCount,setTimerCount] = useState(30)
+    
     
     // 사용자의 챌린지 난이도 구하는 API 호출
     useEffect(()=>{
         const getUserChallengeLevel = async ()=>{
             try{
                 const response = await axios.post('/api/user-challenge-level')
-                console.log('유저 챌린지 레벨 가져오는 api response',response)
                 const userdata = response.data.userChallengeLevel as ChallengePreferences
                 setUserData(userdata)
             }catch(error){
@@ -73,7 +73,6 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
         }
         getUserChallengeLevel()
     },[])
-    console.log('userdata',userData)
 
     // 챌린지 난이도에 따라서 UI 다르게 보여줌 
     const convertLevelToNumber = ()=>{
@@ -134,12 +133,23 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
     }, []);
 
     // 운동 끝 버튼 클릭
-    const onClickEnd = ()=>{
-        console.log('운동 끝')        
-        // 챌린지 데이터 저장 (챌린지 난이도와 성공여부)
-
-        // 모달창 닫기  TODO : 전면광고 보여주기
-        closeModal()
+    const onClickEnd = async ({success}:{success:boolean})=>{
+        // 챌린지 데이터 저장 API호출 
+        try{
+            const response = await axios.post("/api/user-challenge-data",{
+                userId:userData?.userId,
+                challengeId:userData?.challengeId,
+                success:success,
+            })
+            if(response.status === 200){
+                toast.success('챌린지를 기록하였습니다.')
+                // 모달창 닫기  TODO : 전면광고 보여주기
+                closeModal()
+            }
+        }catch(error){
+            console.log('error',error)
+            toast.error('서버 오류로 챌린지를 기록하는 데 실패하였습니다.')
+        }
     }
     
     return (
@@ -174,7 +184,11 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
                         <p className='text-xl  font-bold animate-bounce'>{currentQuote}</p>
                     )}
                     {endWorkout && (
-                        <button className="px-6 py-4 font-bold text-[#30384b] rounded bg-white hover:bg-[#edf1ff] ml-4" onClick={onClickEnd}>운동 끝</button>
+                        <div className='flex gap-3 items-center justify-center'>
+                            <button className="px-6 py-4 font-bold text-[#30384b] rounded bg-white hover:bg-[#edf1ff] active:bg-[#edf1ff]" onClick={()=>onClickEnd({success:true})}>성공</button>
+                            <p className='mx-2'>챌린지</p>
+                            <button className="px-6 py-4 font-bold text-[#30384b] rounded bg-white hover:bg-[#edf1ff] active:bg-[#edf1ff]" onClick={()=>onClickEnd({success:false})}>실패</button>
+                        </div>
                     )}
                 </div>
             </div>

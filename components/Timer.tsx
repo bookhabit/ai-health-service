@@ -9,20 +9,18 @@ const Timer = () => {
   const [audioPermisstion,setAudioPermisstion] = useState(false)
   const totalTime = 30 * 60; // 초 단위의 전체 시간 (30분)
 
-  // Audio
-  const challengeSound = new Audio("/challenge_sound.mp3")
-
-  const playAudio = ()=>{
-      challengeSound.volume = 0.3;
-      challengeSound.loop = true;
-      challengeSound.play();
-  }
-  const stopAudio = ()=>{
-    challengeSound.paused
-  }
-
   useEffect(()=>{
-    console.log('useEffect실행')
+    // Audio
+    const challengeSound = new Audio("/challenge_sound.mp3")
+
+    const playAudio = ()=>{
+        challengeSound.volume = 0.3;
+        challengeSound.loop = true;
+        challengeSound.play();
+    }
+    const stopAudio = ()=>{
+      challengeSound.paused
+    }
     // 오디오 입력 권한
     const getAudioPermission = ()=>{
       // 사용자가 오디오 허용할 것인지?
