@@ -58,6 +58,7 @@ const UserChallenge = ({userChallengeInfo,calendarRef}:UserChallengeProps) => {
         openDialog(date);
     };
 
+
     return (
         <div className='mt-4 text-black'>
             <FullCalendar
@@ -72,6 +73,7 @@ const UserChallenge = ({userChallengeInfo,calendarRef}:UserChallengeProps) => {
                     center: '',
                     end: 'prev,next'
                 }}
+                height={550}
             />
             { isOpenScheduleDialog &&
                 <ScheduleDialog

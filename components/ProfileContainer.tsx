@@ -170,7 +170,7 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
         <div className='flex flex-col gap-2 mt-6'>
             <div className='flex justify-between items-center'>
                 <h1 className='font-bold text-2xl'>챌린지 기록</h1>
-                <button onClick={captureCalendarImage} className=' p-2 bg-mainColor opacity-60 rounded-md'>SNS 공유</button>
+                <Button onClick={captureCalendarImage}>SNS 공유</Button>
             </div>
             <UserChallenge
                 userChallengeInfo={userChallengeInfo}
