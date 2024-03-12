@@ -8,7 +8,6 @@ import DifficultyCard from './DifficultyCard'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import UserExerciseInfo from './UserExerciseInfo'
-import { useRouter } from 'next/navigation'
 import UserChallenge from './UserChallenge'
 import html2canvas from "html2canvas"
 
@@ -45,8 +44,6 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
     // 사용자가 선택한 challenge난이도 level 상태
     const [selectedDifficulty,setSeletedDifficulty] = useState(challengePreferences.challengeId)
     const [saving,setSaving] = useState(false)
-
-    const router = useRouter();
 
     const handleToggleNotifications = ()=>{
         setSendNotifications((prev)=>!prev)
@@ -86,24 +83,6 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
         }
     }
     
-    let isSharing = false; // 현재 공유 중인지 여부를 추적
-
-    // const handleShare = () => {
-    //     if (typeof navigator.share !== "undefined" && !isSharing) {
-    //         isSharing = true; // 공유 시작
-    //         window.navigator.share({
-    //             title: "챌린지 기록",
-    //             text: "이번 달 수행한 아침운동 챌린지 기록입니다",
-    //             url: "https://homemate-ai.vercel.app/profile",
-    //             files: [],
-    //         }).then(() => {
-    //             isSharing = false; // 공유 완료 후 상태 업데이트
-    //         }).catch((error) => {
-    //             isSharing = false; // 공유 실패 시 상태 업데이트
-    //             console.error("공유 중 오류 발생:", error);
-    //         });
-    //     }
-    // };
     const calendarRef = useRef<null|HTMLElement>(null); // FullCalendar 요소를 참조하기 위한 ref를 생성합니다.
 
     // 캘린더를 이미지로 캡처하여 파일로 저장하는 함수

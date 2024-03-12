@@ -67,6 +67,11 @@ const UserChallenge = ({userChallengeInfo,calendarRef}:UserChallengeProps) => {
                 events={events}
                 eventContent={eventContent}
                 dateClick={onDateClick}
+                headerToolbar={{
+                    start: 'title',
+                    center: '',
+                    end: 'prev,next'
+                }}
             />
             { isOpenScheduleDialog &&
                 <ScheduleDialog
