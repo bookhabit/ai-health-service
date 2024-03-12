@@ -4,8 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
+
 const Timer = () => {
-  const [timeLeft, setTimeLeft] = useState(30 * 60); // 초 단위로 설정
+  const currentMinutes = new Date().getMinutes(); // 현재 분
+  const initialTimeLeft = (30 - currentMinutes) * 60; // 초 단위로 초기 설정된 시간
+  const [timeLeft, setTimeLeft] = useState(initialTimeLeft);
   const [audioPermisstion,setAudioPermisstion] = useState(false)
   const totalTime = 30 * 60; // 초 단위의 전체 시간 (30분)
 
