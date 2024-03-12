@@ -84,6 +84,25 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
             setSaving(false)
         }
     }
+    
+    let isSharing = false; // 현재 공유 중인지 여부를 추적
+
+    const handleShare = () => {
+        if (typeof navigator.share !== "undefined" && !isSharing) {
+            isSharing = true; // 공유 시작
+            window.navigator.share({
+                title: "챌린지 기록",
+                text: "이번 달 수행한 아침운동 챌린지 기록입니다",
+                url: "https://homemate-ai.vercel.app/profile",
+                files: [],
+            }).then(() => {
+                isSharing = false; // 공유 완료 후 상태 업데이트
+            }).catch((error) => {
+                isSharing = false; // 공유 실패 시 상태 업데이트
+                console.error("공유 중 오류 발생:", error);
+            });
+        }
+    };
 
   return (
     <div className='flex flex-col gap-2'>
@@ -118,7 +137,10 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
         </div>
         <UserExerciseInfo userExerciseInfo={userExerciseInfo} />
         <div className='flex flex-col gap-2 mt-6'>
-            <h1 className='font-bold text-2xl'>챌린지 기록</h1>
+            <div className='flex justify-between items-center'>
+                <h1 className='font-bold text-2xl'>챌린지 기록</h1>
+                <button onClick={handleShare} className=' p-2 bg-mainColor opacity-60 rounded-md'>SNS 공유</button>
+            </div>
             <UserChallenge
                 userChallengeInfo={userChallengeInfo}
             />

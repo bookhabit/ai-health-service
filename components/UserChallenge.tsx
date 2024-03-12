@@ -1,7 +1,7 @@
 "use client"
 
 import { UserChallengeData } from '@prisma/client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import { DateSelectArg, EventContentArg } from '@fullcalendar/core/index.js'
@@ -56,7 +56,6 @@ const UserChallenge = ({userChallengeInfo}:UserChallengeProps) => {
     const onDateClick = ({ date }: DateClickArg) => {
         openDialog(date);
     };
- 
 
     return (
         <div className='mt-4 text-black'>
