@@ -1,7 +1,7 @@
 "use client"
 
 import { ChallengePreferences, UserChallengeData, UserInfo } from '@prisma/client'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Button } from './ui/button'
 import { Switch } from './ui/switch'
 import DifficultyCard from './DifficultyCard'
@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'
 import UserExerciseInfo from './UserExerciseInfo'
 import { useRouter } from 'next/navigation'
 import UserChallenge from './UserChallenge'
+import html2canvas from "html2canvas"
 
 
 interface ProfileContainerProps {
@@ -87,22 +88,73 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
     
     let isSharing = false; // 현재 공유 중인지 여부를 추적
 
-    const handleShare = () => {
-        if (typeof navigator.share !== "undefined" && !isSharing) {
-            isSharing = true; // 공유 시작
-            window.navigator.share({
-                title: "챌린지 기록",
-                text: "이번 달 수행한 아침운동 챌린지 기록입니다",
-                url: "https://homemate-ai.vercel.app/profile",
-                files: [],
-            }).then(() => {
-                isSharing = false; // 공유 완료 후 상태 업데이트
-            }).catch((error) => {
-                isSharing = false; // 공유 실패 시 상태 업데이트
-                console.error("공유 중 오류 발생:", error);
+    // const handleShare = () => {
+    //     if (typeof navigator.share !== "undefined" && !isSharing) {
+    //         isSharing = true; // 공유 시작
+    //         window.navigator.share({
+    //             title: "챌린지 기록",
+    //             text: "이번 달 수행한 아침운동 챌린지 기록입니다",
+    //             url: "https://homemate-ai.vercel.app/profile",
+    //             files: [],
+    //         }).then(() => {
+    //             isSharing = false; // 공유 완료 후 상태 업데이트
+    //         }).catch((error) => {
+    //             isSharing = false; // 공유 실패 시 상태 업데이트
+    //             console.error("공유 중 오류 발생:", error);
+    //         });
+    //     }
+    // };
+    const calendarRef = useRef<null|HTMLElement>(null); // FullCalendar 요소를 참조하기 위한 ref를 생성합니다.
+
+    // 캘린더를 이미지로 캡처하여 파일로 저장하는 함수
+    const captureCalendarImage = () => {
+      // FullCalendar의 HTML 요소를 직접 참조합니다.
+        const calendarElement = document.querySelector('.fc') as HTMLElement;
+        if(calendarElement){
+            // FullCalendar의 HTML 요소를 캡처하여 이미지로 변환합니다.
+            html2canvas(calendarElement).then(canvas => {
+                // 이미지 데이터를 URL로 변환합니다.
+                const imageDataUrl = canvas.toDataURL('image/png');
+                // 이미지 데이터를 Blob으로 변환합니다.
+                const blob = dataURItoBlob(imageDataUrl);
+        
+                // Blob을 파일로 변환합니다.
+                const file = new File([blob], 'calendar_image.png', { type: 'image/png' });
+        
+                // 파일을 공유합니다.
+                shareFile(file);
             });
+    
         }
     };
+  
+    // 데이터 URL을 Blob으로 변환하는 함수
+    const dataURItoBlob = (dataURI:string) => {
+      const byteString = atob(dataURI.split(',')[1]);
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mimeString });
+    };
+  
+    // 파일을 공유하는 함수
+    const shareFile = (file:File) => {
+      if (navigator.share) {
+        navigator.share({
+          files: [file],
+          title: '챌린지 기록',
+          text: '챌린지 기록 캘린더를 공유합니다.',
+        }).then(() => {
+          console.log('이미지 공유 성공');
+        }).catch((error) => {
+          console.error('이미지 공유 실패:', error);
+        });
+      }
+    };
+  
 
   return (
     <div className='flex flex-col gap-2'>
@@ -139,10 +191,11 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
         <div className='flex flex-col gap-2 mt-6'>
             <div className='flex justify-between items-center'>
                 <h1 className='font-bold text-2xl'>챌린지 기록</h1>
-                <button onClick={handleShare} className=' p-2 bg-mainColor opacity-60 rounded-md'>SNS 공유</button>
+                <button onClick={captureCalendarImage} className=' p-2 bg-mainColor opacity-60 rounded-md'>SNS 공유</button>
             </div>
             <UserChallenge
                 userChallengeInfo={userChallengeInfo}
+                calendarRef={calendarRef}
             />
         </div>
     </div>
