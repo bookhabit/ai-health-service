@@ -38,7 +38,8 @@ function Navbar() {
                         {route.name}
                     </Link>
                 ))}
-                <UserButton afterSignOutUrl='/'/>
+                <UserButton afterSignOutUrl='/sign-in'/>
+                
             </div>
         </div>
     )

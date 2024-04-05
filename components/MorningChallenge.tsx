@@ -56,7 +56,7 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
     const [endWorkout,setEndWorkout] = useState(false)
     const [endAlarm,setEndAlarm] = useState(false)
     const [showQuotes,setShowQuotes] = useState(false)
-    const [currentQuote,setCurrentQuote] = useState('')
+    const [currentQuote,setCurrentQuote] = useState('포기하지 말고 계속 나아가자!')
     const [userData,setUserData] = useState<ChallengePreferences>()
     
     
@@ -166,8 +166,8 @@ const MorningChallenge = ({closeModal}:MorningChallengeProps) => {
                     {endAlarm ? (
                         // TODO : 운동 끝 - 격려메세지 (애니메이션 효과)
                         // 배경이미지 - 축하하는
-                        <div>
-                            <video src='/challenge_success.mp4' autoPlay loop muted />
+                        <div className=''>
+                            <video src='/challenge_success.mp4' autoPlay loop muted className=' max-w-sm' />
                             <div className='flex flex-col justify-center items-center gap-3 mt-8 font-bold'>
                                 <p className=' animate-bounce text-lg'>축하합니다.</p> 
                                 <p>챌린지를 성공하셨습니다.</p>
