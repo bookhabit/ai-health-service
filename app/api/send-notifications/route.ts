@@ -13,7 +13,7 @@ export async function POST(request:Request) {
     console.log("Sending push notification to",subscription,message)
     if(message === undefined){
         return NextResponse.json(
-            {success:false,message:"error sending push notification"},
+            {success:false,message:"Message not found."},
             {status:500}
         )
     }

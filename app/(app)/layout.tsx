@@ -153,7 +153,7 @@ export default function AppRootLayout({
     }
   }
 
-console.log('isChallengeModalVisible',isChallengeModalVisible)
+// console.log('isChallengeModalVisible',isChallengeModalVisible)
   return (
     <div className="flex flex-col w-full h-full">
         <Navbar/>

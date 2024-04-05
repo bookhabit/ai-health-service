@@ -106,7 +106,7 @@ function ChatPage() {
       setMessages(prevMessages => [...prevMessages, ...newMessages]);
 
       if(response.data.has_more === false && response.data.nextPageParams===null){
-        toast.success("이전 채팅데이터가 없습니다.")
+        // toast.success("이전 채팅데이터가 없습니다.")
         setHasNextPage(false)
         setPaginatedParams({after:''})
         return

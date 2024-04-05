@@ -12,3 +12,10 @@ self.addEventListener("push", function (event) {
 
   event.waitUntil(self.registration.showNotification(title, options));
 });
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(process.env.NEXT_PUBLIC_BASE_URL)
+  );
+});

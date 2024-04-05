@@ -184,8 +184,8 @@ export async function POST(request:Request) {
 
             threadAndNotificationsPromises.push(
               axios.post(
-                `https://homemate-ai.vercel.app/api/send-notifications`,
-                // `${process.env.NEXT_PUBLIC_BASE_URL}/api/send-notifications`,
+                // `https://homemate-ai.vercel.app/api/send-notifications`,
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/send-notifications`,
                 {
                   subscription: {
                     endpoint: correspondingUserMeta.endpoint,
