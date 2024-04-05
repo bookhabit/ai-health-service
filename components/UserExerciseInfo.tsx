@@ -51,7 +51,7 @@ const UserExerciseInfo = ({userExerciseInfo}:UserExerciseInfoProps) => {
                 throw new Error(response.data.message ?? "Something went wrong")
             }
 
-            toast.success("userInfo saved!")
+            toast.success("운동기록 정보를 저장했습니다!")
 
         }catch(error){
             toast.error("Something went wrong. Please try again.")

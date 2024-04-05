@@ -73,7 +73,7 @@ const ProfileContainer = ({challengePreferences,userExerciseInfo,userChallengeIn
                 throw new Error(response.data.message ?? "Something went wrong")
             }
 
-            toast.success("Preferences saved!")
+            toast.success("챌린지 난이도를 설정했습니다!")
 
         }catch(error){
             toast.error("Something went wrong. Please try again.")
